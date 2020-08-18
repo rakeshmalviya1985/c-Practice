@@ -1,0 +1,212 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+using namespace std;
+
+class myString
+{
+   private:
+      char *data;
+      int len;
+   
+   public:
+   
+   myString()
+   {
+       data = new char[0];
+       len = 0;
+       
+   }
+ int length()
+   {
+       return len;
+   }  
+   myString(char myChar)
+   {
+      data = new char[1];
+      
+      data[0] = myChar;
+      len = 1;
+   }
+   myString(char* ptr)
+   {
+       int i = 0;
+       while(ptr[i] != '\0')
+       {
+           i++;
+       }
+       
+       len = i;
+       data = new char[len];
+       
+       i =0;
+       while(ptr[i] != '\0')
+       {
+           data[i] =  ptr[i];
+          i++; 
+       }
+       
+   } 
+
+   myString (myString& s) 
+   {
+
+       len = s.length();
+       data   = new char[len];
+      for (unsigned j=0; j < len; j++)
+          data[j] = s[j];
+   }
+
+
+
+   myString& operator=(myString& s)
+   {
+       if(this == &s)
+       return s;
+         
+       len = s.length();
+       delete [] data;
+       data   = new char[len];
+      for (unsigned j=0; j < len; j++)
+          data[j] = s[j]; 
+          
+          return *this;
+   }
+   
+   
+    char operator[](int index)
+    {
+        return data[index];
+    }
+    void displayString() 
+    {
+        int i =0;
+        while(data[i] != '\0')
+        {
+           cout<<" "<<data[i];
+           i++;
+        }
+    }
+
+   friend ostream&  operator<<(std::ostream& os , myString& iObj);
+   friend istream&  operator>>(std::istream& is , myString& iObj);
+   friend myString& operator+(myString& s1 , myString& s2 );
+    ~myString()
+    {
+        delete [] data;
+       
+    }
+};
+
+ostream&  operator<<(std::ostream& os , myString& iObj)
+{
+    int len = iObj.length();
+    for (unsigned j=0; j < len; j++)
+    os<<" ,obj : "<<iObj.data[j];
+    
+    return os;
+}
+
+istream&  operator>>(std::istream& is , myString& iObj)
+{
+    char* ptr = new char[10000];
+    cout<<"Please enter string :";
+    is>>ptr;
+     int i =0;
+     while(ptr[i] != '\0')
+     {
+         i++;
+     }
+     delete [] iObj.data;
+     iObj.len = i;
+     iObj.data = new char[iObj.len];
+     i = 0;
+     while(ptr[i] != '\0' )
+     {
+         iObj.data[i] = ptr[i];
+         //cout<<" ptr :"<<ptr[i];
+         i++;
+     }        
+     delete [] ptr;
+    return is;
+}
+
+myString& operator+(myString& s1 , myString& s2 )
+{
+    int tlen = s1.length() +  s2.length();
+    
+    cout<<" tlen : "<<tlen;
+    
+    int len = s1.length();
+    myString sTmp = s1;
+    
+    if(s1.length() > 0)
+    {
+       delete [] s1.data;
+       s1.len = 0;
+    }
+    
+    s1.data = new char[tlen];
+    s1.len = 0;
+    int i =0;
+    while(sTmp.data[i] != '\0')
+    {
+        s1.data[i] = sTmp.data[i];
+        i++;
+    }
+    int j =0;
+    while(s2.data[j] != '\0')
+    {
+        s1.data[i] = s2.data[j];
+        j++;
+        i++;
+    }
+    
+    int k =0;
+    while(s2.data[k] != '\0')
+    {
+        cout<<" i : "<<s1.data[k];
+        k++;
+    }
+     s1.len = i;         
+    return s1;
+}
+
+bool operator==(myString& s1 , myString& s2 )
+{
+    if(s1.length() != s1.length() )
+    return false;
+    
+    int i = 0;
+    int len = s1.length();
+    while( i < len && s1[i] == s2[i])
+    {
+       i++;
+    }
+    
+    if(i == len)
+    return true;
+    else
+    return false;
+    
+    
+}
+int main()
+{
+    char str[6] = {'r','a','k','e','s','h'};
+    int i =0;
+    myString s0(str);
+    myString s1(str); 
+    
+    if(s1 == s0)
+    cout<<" both are equal";
+    else
+    cout<<" both are not  equal";
+    return 0;
+}
