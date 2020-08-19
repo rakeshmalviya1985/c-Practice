@@ -1,0 +1,98 @@
+/******************************************************************************
+" How to implement share pointer in C++ " more u can find in youtube @equalConnect Coach
+*******************************************************************************/
+
+#include <iostream>
+
+using namespace std;
+class refCount
+{
+    private:
+    int miCount;
+
+    public:
+    refCount(){miCount =0;}
+    refCount(const refCount &obj) = delete;
+    refCount& operator=(refCount &obj) = delete;
+    void operator++(){miCount++;}
+    void operator++(int){miCount++;}
+    void operator--(){miCount--;}
+    void operator--(int){miCount--;}
+    void reset(){miCount = 0;}
+    int getCount(){ return miCount;}
+    
+    ~refCount(){}
+};
+
+template <typename T>
+class sharePtr
+{
+    private:
+    T *mpPtr;
+    refCount *mCounter;
+    public:
+    
+    //sharePtr(){mpPtr = nullptr;mCounter=nullptr;}
+    explicit sharePtr(T *arg = nullptr)
+    {
+        cout<<"\nCalling parameterized constructor";
+        mCounter = new refCount();
+        mpPtr = arg;
+        if(arg)
+        (*mCounter)++;
+        
+    }
+    
+    sharePtr(sharePtr<T> &arg)
+    {
+        mpPtr = arg.mpPtr;
+        mCounter = arg.mCounter;
+        (*mCounter)++;
+    }
+
+    sharePtr& operator=(sharePtr<T> &arg)
+    {
+        mpPtr = arg.mpPtr;
+        mCounter = arg.mCounter;
+        (*mCounter)++;
+    }
+    
+    int useCount()
+    {
+        return (mCounter->getCount());
+    }
+    
+    T& operator*()
+    {
+        return *mpPtr;
+    }
+
+    T* operator->()
+    {
+        return *mpPtr;
+    }
+    
+    ~sharePtr()
+    {
+        (*mCounter)--;
+        
+        if(mCounter->getCount() == 0)
+        {
+           delete mpPtr;
+           delete mCounter;
+        }
+        
+    }
+        
+};
+int main()
+{
+    
+    sharePtr<int> p1(new int(10));
+    sharePtr<int> p2;
+    *p1 = 20;
+    p2 = p1;
+    cout<<"\n "<<p1.useCount();
+
+    return 0;
+}
